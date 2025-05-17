@@ -4,7 +4,7 @@ A full-stack machine learning pipeline built around the Iris dataset. This proje
 
 ## 🚀 Live Demo
 
-👉 [Visit the Web App]([https://your-placeholder-link.com](https://gray-island-077e5da0f.6.azurestaticapps.net))  
+👉 [Visit the Web App](https://gray-island-077e5da0f.6.azurestaticapps.net)  
 
 ---
 
