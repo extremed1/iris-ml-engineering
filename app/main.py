@@ -1,12 +1,22 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 from app.Models.ModelPrediction import predictIrisFlower
 from app.Models.ModelPrediction import __version__ as modelVersion
 
 app = FastAPI()
 
+# Adding CORS middleware to allow cross-origin requests
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all for development; restrict in prod
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# Inheresit from BaseModel, this is a Pydantic model that defines the input data structure for the prediction endpoint.
+
+# Inherits from BaseModel, this is a Pydantic model that defines the input data structure for the prediction endpoint.
 class FloatIn(BaseModel):
     sepalLength: float
     sepalWidth: float

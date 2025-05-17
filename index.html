@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iris Species Prediction Website</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🌿 What's Your Iris Type?</h1>
+        <form id="predictionform">
+            <label for="input1">Sepal Length (cm):</label>
+            <input type="text" id="input1" name="input1" required/>
+
+            <label for="input2">Sepal Width (cm):</label>
+            <input type="text" id="input2" name="input2" required/>
+
+            <label for="input3">Petal Length (cm):</label>
+            <input type="text" id="input3" name="input3" required/>
+
+            <label for="input4">Petal Width (cm):</label>
+            <input type="text" id="input4" name="input4" required/>
+
+            <button type="submit">Enter</button>
+        </form>
+        <div id="result"></div>
+    </div>
+    <script src="index.js"></script>
+</body>
+</html>
