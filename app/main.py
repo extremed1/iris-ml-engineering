@@ -29,9 +29,9 @@ class PredictionOut(BaseModel):
     species: str
 
 
-@app.get("/")
-def home():
-    return {"health_check": "OK", "model_version": modelVersion}
+@app.get("/health")
+def healthCheck():
+    return {"status": "Ok"}
 
 
 @app.post("/predict", response_model=PredictionOut)
