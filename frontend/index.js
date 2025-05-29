@@ -7,7 +7,11 @@ document.getElementById("predictionform").addEventListener("submit", async funct
     const petalLength = parseFloat(document.getElementById("input3").value);
     const petalWidth = parseFloat(document.getElementById("input4").value);
 
-    // Prepare the payload in the expected structure
+    // Optional: clear previous result while loading
+    const resultElement = document.getElementById("result");
+    resultElement.innerText = "🔄 Predicting...";
+
+    // Prepare the payload
     const data = {
         sepalLength,
         sepalWidth,
@@ -16,7 +20,7 @@ document.getElementById("predictionform").addEventListener("submit", async funct
     };
 
     try {
-        const response = await fetch("https://irispredictions.redglacier-78667baa.eastus.azurecontainerapps.io/predict", {
+        const response = await fetch("https://newcontainerapp.redglacier-78667baa.eastus.azurecontainerapps.io/predict", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -30,9 +34,12 @@ document.getElementById("predictionform").addEventListener("submit", async funct
 
         const result = await response.json();
         const speciesTitleCase = result.species.charAt(0).toUpperCase() + result.species.slice(1).toLowerCase();
-        document.getElementById("result").innerText = `🌸 Predicted Species: ${speciesTitleCase}`;
+        resultElement.innerText = `🌸 Predicted Species: ${speciesTitleCase}`;
+
+        // Optional: Reset form fields after success
+        document.getElementById("predictionform").reset();
     } catch (error) {
         console.error("Prediction error:", error);
-        document.getElementById("result").innerText = "❌ Failed to get prediction. Please check your inputs or try again later.";
+        resultElement.innerText = "❌ Failed to get prediction. Please check your inputs or try again later.";
     }
 });
