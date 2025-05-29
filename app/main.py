@@ -31,7 +31,7 @@ class PredictionOut(BaseModel):
 
 @app.get("/health")
 def healthCheck():
-    return {"status": "Ok"}
+    return {"status": "ok"}
 
 
 @app.post("/predict", response_model=PredictionOut)
