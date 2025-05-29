@@ -39,22 +39,9 @@ jobs:
         run: |
           docker build -t ${{ steps.meta.outputs.tags }} .
 
-      - name: Get local image digest
-        id: local_digest
-        run: |
-          LOCAL_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ steps.meta.outputs.tags }} | cut -d@ -f2)
-          echo "Local digest: $LOCAL_DIGEST"
-          echo "local_digest=$LOCAL_DIGEST" >> $GITHUB_OUTPUT
+      # Removed local and remote digest steps
 
-      - name: Get remote image digest (if exists)
-        id: remote_digest
+      - name: Push Docker image
         run: |
-          REMOTE_DIGEST=$(skopeo inspect docker://${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} 2>/dev/null | jq -r '.Digest // empty')
-          echo "Remote digest: $REMOTE_DIGEST"
-          echo "remote_digest=$REMOTE_DIGEST" >> $GITHUB_OUTPUT
-
-      - name: Push image if changed
-        if: steps.local_digest.outputs.local_digest != steps.remote_digest.outputs.remote_digest
-        run: |
-          echo "Digests differ — pushing image to Docker Hub."
+          echo "Pushing image to Docker Hub."
           docker push ${{ steps.meta.outputs.tags }}
