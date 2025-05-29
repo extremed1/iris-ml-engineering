@@ -1,0 +1,60 @@
+name: Publish Docker Image
+
+on:
+  release:
+    types: [published]
+
+env:
+  REGISTRY: ${{ vars.REGISTRY }}
+  IMAGE_NAME: ${{ vars.IMAGE_NAME }}
+  IMAGE_TAG: ${{ github.event.release.tag_name }}
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install skopeo and jq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y skopeo jq
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: ${{ env.IMAGE_TAG }}
+
+      - name: Build Docker image (locally)
+        run: |
+          docker build -t ${{ steps.meta.outputs.tags }} .
+
+      - name: Get local image digest
+        id: local_digest
+        run: |
+          LOCAL_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ steps.meta.outputs.tags }} | cut -d@ -f2)
+          echo "Local digest: $LOCAL_DIGEST"
+          echo "local_digest=$LOCAL_DIGEST" >> $GITHUB_OUTPUT
+
+      - name: Get remote image digest (if exists)
+        id: remote_digest
+        run: |
+          REMOTE_DIGEST=$(skopeo inspect docker://${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} 2>/dev/null | jq -r '.Digest // empty')
+          echo "Remote digest: $REMOTE_DIGEST"
+          echo "remote_digest=$REMOTE_DIGEST" >> $GITHUB_OUTPUT
+
+      - name: Push image if changed
+        if: steps.local_digest.outputs.local_digest != steps.remote_digest.outputs.remote_digest
+        run: |
+          echo "Digests differ — pushing image to Docker Hub."
+          docker push ${{ steps.meta.outputs.tags }}
